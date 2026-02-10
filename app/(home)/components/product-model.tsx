@@ -7,6 +7,7 @@ import Image from "next/image";
 import ToppingList from "./topping-list";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
+import { Suspense } from "react";
 
 const ProductModal = ({ product }: { product: Product }) => {
   return (
@@ -60,8 +61,9 @@ const ProductModal = ({ product }: { product: Product }) => {
                 );
               },
             )}
-
-            <ToppingList />
+            <Suspense fallback={"Loading.."}>
+              <ToppingList />
+            </Suspense>
 
             <div className="flex items-center justify-between mt-12">
               <span className="font-bold">₹400</span>
