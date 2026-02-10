@@ -1,3 +1,4 @@
+"use client";
 import { Product } from "@/app/lib/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
