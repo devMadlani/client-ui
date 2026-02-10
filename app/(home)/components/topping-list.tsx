@@ -1,6 +1,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 import ToppingCard from "./topping-card";
-import { Topping } from "@/app/lib/types";
+import { Topping } from "@/lib/types";
 
 const ToppingList = () => {
   const [toppings, setToppings] = useState<Topping[]>([]);

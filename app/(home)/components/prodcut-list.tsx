@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React from "react";
 import ProductCard from "./product-card";
-import { Category, Product } from "@/app/lib/types";
+import { Category, Product } from "@/lib/types";
 
 const ProductList = async () => {
   // todo: do concurrent requests -> Promise.all()

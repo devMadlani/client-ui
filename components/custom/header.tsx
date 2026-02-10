@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { Phone, ShoppingBasket } from "lucide-react";
 import { Button } from "../ui/button";
-import { Tenant } from "@/app/lib/types";
+import { Tenant } from "@/lib/types";
 
 const Header = async () => {
   const tenantsResponse = await fetch(

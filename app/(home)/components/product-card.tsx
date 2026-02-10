@@ -5,7 +5,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Product } from "@/app/lib/types";
+import { Product } from "@/lib/types";
 import ProductModal from "./product-model";
 
 type PropTypes = { product: Product };

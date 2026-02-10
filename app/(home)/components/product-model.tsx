@@ -1,5 +1,5 @@
 "use client";
-import { Product } from "@/app/lib/types";
+import { Product } from "@/lib/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
