@@ -1,62 +1,9 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProductCard, { Product } from "./components/product-card";
-import { Category } from "../lib/types";
-
-const products: Product[] = [
-  {
-    id: "1",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-  {
-    id: "2",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-  {
-    id: "3",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-  {
-    id: "4",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-  {
-    id: "5",
-    name: "Margarita Pizza",
-    description: "This is a very tasty pizza",
-    image: "/pizza-main.png",
-    price: 500,
-  },
-];
+import { Suspense } from "react";
+import ProductList from "./components/prodcut-list";
 
 export default async function Home() {
-  const categoryResponse = await fetch(
-    `${process.env.BACKEND_URL}/api/catalog/categories`,
-    {
-      next: {
-        revalidate: 3600, // 1 hour
-      },
-    },
-  );
-
-  if (!categoryResponse.ok) {
-    throw new Error("Failed to fetch categories");
-  }
-
-  const categories: Category[] = await categoryResponse.json();
   return (
     <>
       <section className="bg-white">
@@ -84,39 +31,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <section>
-        <div className="container py-12 mx-auto">
-          <Tabs defaultValue="pizza">
-            <TabsList>
-              {categories.map((category) => {
-                return (
-                  <TabsTrigger
-                    key={category._id}
-                    value={category._id}
-                    className="text-md"
-                  >
-                    {category.name}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-            <TabsContent value="pizza">
-              <div className="grid grid-cols-4 gap-6 mt-6">
-                {products.map((product) => (
-                  <ProductCard product={product} key={product.id} />
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="beverages">
-              <div className="grid grid-cols-4 gap-6 mt-6">
-                {products.map((product) => (
-                  <ProductCard product={product} key={product.id} />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </section>
+      <Suspense fallback={"Loading...."}>
+        <ProductList />
+      </Suspense>
     </>
   );
 }
