@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import Link from "next/link";
-import { Phone, ShoppingBasket } from "lucide-react";
+import { Phone } from "lucide-react";
 import { Button } from "../ui/button";
 import { Tenant } from "@/lib/types";
 import CartCounter from "./CartCounter";

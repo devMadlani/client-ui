@@ -23,7 +23,7 @@ const ProductList = async () => {
   // todo: add pagination
   const productsResponse = await fetch(
     // todo: add dynamic tenantId
-    `${process.env.BACKEND_URL}/api/catalog/products?perPage=100&tenantId=10`,
+    `${process.env.BACKEND_URL}/api/catalog/products?perPage=100&tenantId=1`,
     {
       next: {
         revalidate: 3600, // 1 hour
@@ -32,6 +32,7 @@ const ProductList = async () => {
   );
 
   const products: { data: Product[] } = await productsResponse.json();
+  console.log(products);
   return (
     <section>
       <div className="container py-12 mx-auto">

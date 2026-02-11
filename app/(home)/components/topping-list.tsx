@@ -8,11 +8,10 @@ const ToppingList = () => {
     const fetchData = async () => {
       const toppingResponse = await fetch(
         // todo: make tenantId dynamic
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/catalog/toppings?tenantId=10`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/catalog/toppings?tenantId=1`,
       );
       const toppings = await toppingResponse.json();
-      setToppings(toppings);
-      console.log("toppings", toppings);
+      setToppings(toppings.data);
     };
     fetchData();
   }, []);
@@ -34,8 +33,6 @@ const ToppingList = () => {
 
       setSelectedToppings((prev: Topping[]) => [...prev, topping]);
     });
-
-    setSelectedToppings((prev: Topping[]) => [...prev, topping]);
   };
 
   return (
