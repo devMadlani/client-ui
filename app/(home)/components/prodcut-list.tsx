@@ -36,7 +36,7 @@ const ProductList = async ({
   );
 
   const products: { data: Product[] } = await productsResponse.json();
-  console.log(products);
+
   return (
     <section>
       <div className="container py-12 mx-auto">

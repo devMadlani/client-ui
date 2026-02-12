@@ -21,7 +21,7 @@ const ToppingList = ({
         }/api/catalog/toppings?tenantId=${searchParams.get("restaurantId")}`,
       );
       const toppings = await toppingResponse.json();
-      console.log(toppings, "toppings");
+
       setToppings(toppings.data);
     };
     fetchData();

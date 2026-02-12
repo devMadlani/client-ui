@@ -1,11 +1,10 @@
 "use server";
 import cookie from "cookie";
+import { cookies } from "next/headers";
 
-import { NextResponse } from "next/server";
-
-export default async function login(prevState: unknown, formdata: FormData) {
-  const email = formdata.get("email") as string;
-  const password = formdata.get("password") as string;
+export default async function login(_: unknown, formdata: FormData) {
+  const email = formdata.get("email");
+  const password = formdata.get("password");
   // todo: do request data validation
 
   // call auth service
@@ -27,7 +26,6 @@ export default async function login(prevState: unknown, formdata: FormData) {
 
     if (!response.ok) {
       const error = await response.json();
-
       console.log("error", error);
       return {
         type: "error",
@@ -35,42 +33,37 @@ export default async function login(prevState: unknown, formdata: FormData) {
       };
     }
 
-    const setCookiesHeader = response.headers.get("set-cookie");
-    if (!setCookiesHeader) {
-      return { type: "error", message: "No cookies received from backend" };
-    }
-
-    // Parse cookies
-    const parsedCookies = cookie.parse(setCookiesHeader);
-    const accessToken = parsedCookies.accessToken;
-    const refreshToken = parsedCookies.refreshToken;
+    const c = response.headers.getSetCookie();
+    const accessToken = c.find((cookie) => cookie.includes("accessToken"));
+    const refreshToken = c.find((cookie) => cookie.includes("refreshToken"));
 
     if (!accessToken || !refreshToken) {
-      return { type: "error", message: "Tokens not found in cookies" };
+      return {
+        type: "error",
+        message: "No cookies were found!",
+      };
     }
 
-    const res = NextResponse.json({
-      type: "success",
-      message: "Login successful!",
-    });
+    const parsedAccessToken = cookie.parse(accessToken);
+    const parsedRefreshToken = cookie.parse(refreshToken);
 
-    res.cookies.set({
-      name: "accessToken",
-      value: accessToken,
-      httpOnly: true,
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    console.log(parsedAccessToken, parsedRefreshToken);
+    const setCookie = response.headers.get("set-cookie");
 
-    res.cookies.set({
-      name: "refreshToken",
-      value: refreshToken,
-      httpOnly: true,
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    if (setCookie) {
+      const cookieStore = await cookies();
+
+      setCookie.split(/,(?=\s*\w+=)/).forEach((cookieStr) => {
+        const [nameValue] = cookieStr.split(";");
+        const [name, value] = nameValue.split("=");
+        cookieStore.set(name, value, {
+          httpOnly: true,
+          path: "/",
+          sameSite: "strict",
+          secure: process.env.NODE_ENV === "production",
+        });
+      });
+    }
 
     return {
       type: "success",
