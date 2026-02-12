@@ -14,17 +14,62 @@ import ToppingList from "./topping-list";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Product, Topping } from "@/lib/types";
 import { Label } from "@/components/ui/label";
-import { useAppDispatch } from "@/lib/store/hooks";
-import { addToCart } from "@/lib/store/features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { addToCart, CartItem } from "@/lib/store/features/cart/cartSlice";
+import { hashTheItem } from "@/lib/utils";
 
 type ChosenConfig = {
   [key: string]: string;
 };
 const ProductModal = ({ product }: { product: Product }) => {
+  const cartItems = useAppSelector((state) => state.cart.cartItems);
   const dispatch = useAppDispatch();
 
-  const [chosenConfig, setChosenConfig] = useState<ChosenConfig>();
+  const defaultConfiguration = Object.entries(
+    product.category.priceConfiguration,
+  )
+    .map(([key, value]) => {
+      return { [key]: value.availableOptions[0] };
+    })
+    .reduce((acc, curr) => ({ ...acc, ...curr }), {});
+
+  const [chosenConfig, setChosenConfig] = useState<ChosenConfig>(
+    defaultConfiguration as unknown as ChosenConfig,
+  );
   const [selectedToppings, setSelectedToppings] = React.useState<Topping[]>([]);
+
+  const totalPrice = React.useMemo(() => {
+    const toppingsTotal = selectedToppings.reduce(
+      (acc, curr) => acc + curr.price,
+      0,
+    );
+
+    const configPricing = Object.entries(chosenConfig).reduce(
+      (acc, [key, value]: [string, string]) => {
+        const price = product.priceConfiguration[key].availableOptions[value];
+        return acc + price;
+      },
+      0,
+    );
+    return configPricing + toppingsTotal;
+  }, [chosenConfig, selectedToppings, product]);
+
+  const alreadyHasInCart = React.useMemo(() => {
+    const currentConfiguration = {
+      _id: product._id,
+      name: product.name,
+      image: product.image,
+      priceConfiguration: product.priceConfiguration,
+      chosenConfiguration: {
+        priceConfiguration: { ...chosenConfig },
+        selectedToppings: selectedToppings,
+      },
+      qty: 1,
+    };
+
+    const hash = hashTheItem(currentConfiguration);
+    return cartItems.some((item) => item.hash === hash);
+  }, [product, chosenConfig, selectedToppings, cartItems]);
 
   const handleCheckBoxCheck = (topping: Topping) => {
     const isAlreadyExists = selectedToppings.some(
@@ -44,12 +89,16 @@ const ProductModal = ({ product }: { product: Product }) => {
   };
 
   const handleAddToCart = (product: Product) => {
-    const itemToAdd = {
-      product,
+    const itemToAdd: CartItem = {
+      _id: product._id,
+      name: product.name,
+      image: product.image,
+      priceConfiguration: product.priceConfiguration,
       chosenConfiguration: {
         priceConfiguration: chosenConfig!,
         selectedToppings: selectedToppings,
       },
+      qty: 1,
     };
     dispatch(addToCart(itemToAdd));
   };
@@ -127,18 +176,29 @@ const ProductModal = ({ product }: { product: Product }) => {
               },
             )}
 
-            <Suspense fallback={"Toppings loading..."}>
-              <ToppingList
-                selectedToppings={selectedToppings}
-                handleCheckBoxCheck={handleCheckBoxCheck}
-              />
-            </Suspense>
+            {/* todo: make this condition dynamic (Add hasToppings field in category document. (Backend))  */}
+            {/* {This solution is not scalable!!!} */}
+            {product.category.name === "Pizza" && (
+              <Suspense fallback={"Toppings loading..."}>
+                <ToppingList
+                  selectedToppings={selectedToppings}
+                  handleCheckBoxCheck={handleCheckBoxCheck}
+                />
+              </Suspense>
+            )}
 
             <div className="flex items-center justify-between mt-12">
-              <span className="font-bold">₹400</span>
-              <Button onClick={() => handleAddToCart(product)}>
+              <span className="font-bold">₹{totalPrice}</span>
+
+              <Button
+                className={alreadyHasInCart ? "bg-gray-700" : "bg-primary"}
+                disabled={alreadyHasInCart}
+                onClick={() => handleAddToCart(product)}
+              >
                 <ShoppingCart size={20} />
-                <span className="ml-2">Add to cart</span>
+                <span className="ml-2">
+                  {alreadyHasInCart ? "Already in cart" : "Add to cart"}
+                </span>
               </Button>
             </div>
           </div>
