@@ -12,27 +12,61 @@ import { ShoppingCart } from "lucide-react";
 import React, { startTransition, Suspense, useState } from "react";
 import ToppingList from "./topping-list";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Product } from "@/lib/types";
+import { Product, Topping } from "@/lib/types";
 import { Label } from "@/components/ui/label";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { addToCart } from "@/lib/store/features/cart/cartSlice";
 
-type ChoosenConfig = {
+type ChosenConfig = {
   [key: string]: string;
 };
-
 const ProductModal = ({ product }: { product: Product }) => {
-  const [choosenConfig, setChoosenConfig] = useState<ChoosenConfig>();
+  const dispatch = useAppDispatch();
 
-  const handleRadioChange = (key: string, data: string) => {
+  const [chosenConfig, setChosenConfig] = useState<ChosenConfig>();
+  const [selectedToppings, setSelectedToppings] = React.useState<Topping[]>([]);
+
+  const handleCheckBoxCheck = (topping: Topping) => {
+    const isAlreadyExists = selectedToppings.some(
+      (element: Topping) => element.id === topping.id,
+    );
+
     startTransition(() => {
-      setChoosenConfig((prev) => {
-        return { ...prev, [key]: data };
-      });
+      if (isAlreadyExists) {
+        setSelectedToppings((prev) =>
+          prev.filter((elm: Topping) => elm.id !== topping.id),
+        );
+        return;
+      }
+
+      setSelectedToppings((prev: Topping[]) => [...prev, topping]);
     });
   };
 
-  const handleAddToCart = () => {
-    // todo: add to cart logic
-    console.log("adding to the cart....");
+  const handleAddToCart = (product: Product) => {
+    const itemToAdd = {
+      product,
+      chosenConfiguration: {
+        priceConfiguration: chosenConfig!,
+        selectedToppings: selectedToppings,
+      },
+    };
+    dispatch(addToCart(itemToAdd));
+  };
+
+  const handleRadioChange = (key: string, data: string) => {
+    /**
+          {
+            Size: "Medium",
+            Crust: "Thin"
+        }
+         */
+
+    startTransition(() => {
+      setChosenConfig((prev) => {
+        return { ...prev, [key]: data };
+      });
+    });
   };
 
   return (
@@ -94,12 +128,15 @@ const ProductModal = ({ product }: { product: Product }) => {
             )}
 
             <Suspense fallback={"Toppings loading..."}>
-              <ToppingList />
+              <ToppingList
+                selectedToppings={selectedToppings}
+                handleCheckBoxCheck={handleCheckBoxCheck}
+              />
             </Suspense>
 
             <div className="flex items-center justify-between mt-12">
               <span className="font-bold">₹400</span>
-              <Button onClick={handleAddToCart}>
+              <Button onClick={() => handleAddToCart(product)}>
                 <ShoppingCart size={20} />
                 <span className="ml-2">Add to cart</span>
               </Button>
