@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useFormStatus } from "react-dom";
 import { LoaderCircle } from "lucide-react";
-import login from "../lib/actions/login";
+import login from "../../lib/actions/login";
 import { useActionState, useEffect } from "react";
 
 const SubmitButton = () => {

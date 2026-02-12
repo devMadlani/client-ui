@@ -4,8 +4,11 @@ import { Button } from "../ui/button";
 import { Tenant } from "@/lib/types";
 import CartCounter from "./cart-counter";
 import TenantSelect from "./tenant-select";
+import { getSession } from "@/lib/session";
+import Logout from "./logout";
 
 const Header = async () => {
+  const session = await getSession();
   const tenantsResponse = await fetch(
     `${process.env.BACKEND_URL}/api/auth/tenants?perPage=100`,
     {
@@ -65,7 +68,13 @@ const Header = async () => {
             <Phone />
             <span>+91 9800 098 998</span>
           </div>
-          <Button size={"sm"}>Logout</Button>
+          {session ? (
+            <Logout />
+          ) : (
+            <Button size={"sm"} asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+          )}
         </div>
       </nav>
     </header>
