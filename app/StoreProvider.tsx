@@ -20,7 +20,7 @@ export default function StoreProvider({
       const cartItems = window.localStorage.getItem("cartItems");
 
       try {
-        const parsedItems = JSON.parse(cartItems as string);
+        const parsedItems = cartItems ? JSON.parse(cartItems) : [];
         storeRef.current.dispatch(setInitialCartItems(parsedItems));
       } catch (err) {
         console.error(err);
