@@ -3,6 +3,7 @@ import "./globals.css";
 import { Manrope } from "next/font/google";
 import Header from "@/components/custom/header";
 import StoreProvider from "./StoreProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,6 +26,7 @@ export default function RootLayout({
         <body className={`${manrope.variable}  antialiased`}>
           <Header />
           <main>{children}</main>
+          <Toaster />
         </body>
       </StoreProvider>
     </html>
