@@ -9,14 +9,14 @@ import Link from "next/link";
 import { Phone } from "lucide-react";
 import { Button } from "../ui/button";
 import { Tenant } from "@/lib/types";
-import CartCounter from "./CartCounter";
+import CartCounter from "./cart-counter";
 
 const Header = async () => {
   const tenantsResponse = await fetch(
     `${process.env.BACKEND_URL}/api/auth/tenants?perPage=100`,
     {
       next: {
-        revalidate: 3600,
+        revalidate: 3600, // 1 hour
       },
     },
   );
