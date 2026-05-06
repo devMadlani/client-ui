@@ -5,6 +5,7 @@ import Header from "@/components/custom/header";
 import StoreProvider from "./StoreProvider";
 import { Toaster } from "@/components/ui/sonner";
 import Refresher from "@/components/custom/refresher";
+import QueryProvider from "./QueryProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,11 +26,13 @@ export default function RootLayout({
     <html lang="en">
       <StoreProvider>
         <body className={`${manrope.variable}  antialiased`}>
-          <Refresher>
-            <Header />
-            <main>{children}</main>
-            <Toaster />
-          </Refresher>
+          <QueryProvider>
+            <Refresher>
+              <Header />
+              <main>{children}</main>
+              <Toaster />
+            </Refresher>
+          </QueryProvider>
         </body>
       </StoreProvider>
     </html>
