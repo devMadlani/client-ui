@@ -29,8 +29,8 @@ export default async function Checkout({
   searchParams: { restaurantId: string };
 }) {
   const session = await getSession();
-
-  const sParams = new URLSearchParams(searchParams);
+  const params = await searchParams;
+  const sParams = new URLSearchParams(params);
   const existingQueryString = sParams.toString();
 
   sParams.append("return-to", `/checkout?${existingQueryString}`);
