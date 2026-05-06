@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -16,26 +22,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { getSession } from "@/lib/session";
 import { Coins, CreditCard, Plus } from "lucide-react";
 import { redirect } from "next/navigation";
-type SearchParams = Record<string, string | string[] | undefined>;
 
-export default async function Checkout(params: SearchParams) {
+export default async function Checkout({
+  searchParams,
+}: {
+  searchParams: { restaurantId: string };
+}) {
   const session = await getSession();
-  const urlParams = new URLSearchParams();
 
-  for (const [key, value] of Object.entries(params)) {
-    if (typeof value === "string") {
-      urlParams.append(key, value);
-    } else if (Array.isArray(value)) {
-      value.forEach((v) => urlParams.append(key, v));
-    }
-  }
+  const sParams = new URLSearchParams(searchParams);
+  const existingQueryString = sParams.toString();
 
-  const existingQueryString = urlParams.toString();
+  sParams.append("return-to", `/checkout?${existingQueryString}`);
 
-  urlParams.append("return-to", `/checkout?${existingQueryString}`);
+  // /login?return-to=/checkout?existingQueryString
 
   if (!session) {
-    redirect(`/login?${urlParams}`);
+    redirect(`/login?${sParams}`);
   }
 
   return (
