@@ -15,13 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { Customer } from "@/lib/types";
 import { getCustomer } from "@/src/lib/http/api";
 import { useQuery } from "@tanstack/react-query";
 import { Coins, CreditCard, Plus } from "lucide-react";
 import React from "react";
 
 const CustomerForm = () => {
-  const { data: customer, isLoading } = useQuery({
+  const { data: customer, isLoading } = useQuery<Customer>({
     queryKey: ["customer"],
     queryFn: async () => {
       return await getCustomer().then((res) => res.data);
@@ -104,26 +105,7 @@ const CustomerForm = () => {
                 <RadioGroup
                   defaultValue="option-one"
                   className="grid grid-cols-2 gap-6 mt-2"
-                >
-                  <Card className="p-6">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="option-one" id="option-one" />
-                      <Label htmlFor="option-one" className="leading-normal">
-                        123, ABC Street, Malad West, Mumbai, Maharashtra, India
-                        400064
-                      </Label>
-                    </div>
-                  </Card>
-                  <Card className="p-6">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="option-two" id="option-two" />
-                      <Label htmlFor="option-two" className="leading-normal">
-                        Flat No. 501, Sunshine Apartments, Andheri East, Mumbai,
-                        Maharashtra, India 400069
-                      </Label>
-                    </div>
-                  </Card>
-                </RadioGroup>
+                ></RadioGroup>
               </div>
             </div>
             <div className="grid gap-3">
@@ -140,6 +122,25 @@ const CustomerForm = () => {
                     htmlFor={"card"}
                     className="flex items-center justify-center rounded-md border-2 bg-white p-2 h-16 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                   >
+                    {" "}
+                    {customer?.addresses.map((address) => {
+                      return (
+                        <Card className="p-6" key={address.text}>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value="option-one"
+                              id="option-one"
+                            />
+                            <Label
+                              htmlFor="option-one"
+                              className="leading-normal"
+                            >
+                              {address.text}
+                            </Label>
+                          </div>
+                        </Card>
+                      );
+                    })}
                     <CreditCard size={"20"} />
                     <span className="ml-2">Card</span>
                   </Label>
