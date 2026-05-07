@@ -69,3 +69,8 @@ export type Customer = {
   email: string;
   addresses: Address[];
 };
+
+export type CouponData = {
+  code: string;
+  tenantId: string;
+};
